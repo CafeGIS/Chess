@@ -1,0 +1,191 @@
+function Chess2DHtmlGraphicalView(model, controller){
+
+    var IMG_FILE_SUFFIX = ".png";
+    var IMG_DIR = "images/";
+
+    var board;
+    var modelConstants;
+    var dragInfo;
+
+    /* Private methods */    
+    
+    function createBoard(){
+        var i, j,
+            htmlDomBoard,
+            rank, square;
+
+        var LETTERS = ['a','b','c','d','e','f','g','h'];
+    
+        htmlDomBoard = document.createElement('div');
+        htmlDomBoard.id = "chess-board";
+        
+        for(i = 1 ; i <= 8 ; i++){
+            rank = document.createElement('div');
+            rank.className = "chess-board-rank"; // use classList eventually (some public domain code : https://developer.mozilla.org/en/DOM/element.classList)
+                                                 // check jQuery as well
+            for(j = 1 ; j <= 8 ; j++){
+                square = document.createElement('div');
+                square.className = "chess-board-square"; // use classList eventually
+                /*square.className += " " + (((i+j)%2 == 0) ? "white" : "black"); // use classList eventually*/
+                square.id = LETTERS[j-1] + (9-i);
+                
+                square.addEventListener('dragenter', squareDragEnter, false);
+                square.addEventListener('drop', function(){console.log('drop on a square');}/*squareDrop*/, false);
+                //square.addEventListener('dragover', function(){return false;}, false);
+                square.ondragover = "return false";
+        
+        
+                rank.appendChild(square);
+            }
+        
+            htmlDomBoard.appendChild(rank);
+        }
+        
+        return htmlDomBoard;
+    }
+    
+    
+    function fileName(piece){
+        var imgFileName = IMG_DIR;
+        
+        switch(piece.color){
+            case modelConstants.WHITE : 
+                imgFileName += "White";
+                break;
+            case modelConstants.BLACK :
+                imgFileName += "Black";
+                break;
+            default : 
+                throw new Error("Piece color not recognized in constructor function of Chess2DHtmlGraphicalView");
+        }
+        
+        switch(piece.type){
+            case modelConstants.PAWN : 
+                imgFileName += "Pawn";
+                break;
+            case modelConstants.ROOK :
+                imgFileName += "Rook";
+                break;
+            case modelConstants.KNIGHT : 
+                imgFileName += "Knight";
+                break;
+            case modelConstants.BISHOP :
+                imgFileName += "Bishop";
+                break;
+            case modelConstants.KING : 
+                imgFileName += "King";
+                break;
+            case modelConstants.QUEEN :
+                imgFileName += "Queen";
+                break;
+                
+            default : 
+                throw new Error("Piece type not recognized in constructor function of Chess2DHtmlGraphicalView");
+        }
+        
+        imgFileName += IMG_FILE_SUFFIX;
+
+        return imgFileName;
+    }
+    
+    /*
+    ** Drag & Drop management
+    */
+    
+    function pieceImgDragStart(ev){
+        //var img;
+        var target = ev.target;
+       
+        //target.parentNode.style.backgroundColor = 'rgb(200,100,150)';
+
+        ev.dataTransfer.effectAllowed = "move";
+
+        //img = document.createElement("img");
+        //img.src = target.src;
+        //document.body.appendChild(img);
+        //img.width = window.getComputedStyle(img, null).getPropertyValue('width');
+        //img.height = window.getComputedStyle(img, null).getPropertyValue('height');
+        //target.parentNode.removeChild(target);
+        
+        ev.dataTransfer.setDragImage(target, 0, 0); // a bit random
+        ev.dataTransfer.setData("Text", "azertyuiop");
+        
+        dragInfo = {};
+        dragInfo.dragStartPos = target.parentNode.id;
+    }
+    
+    function squareDragEnter(ev){
+
+        ev.target.style.backgroundColor = '#4B0082';
+        ev.dataTransfer.dropEffect = "move";
+        console.log('dragenter');
+    }
+    
+        
+    function squareDrop(ev){
+        /*
+        ** lancer des drop fais à la main (document.createEvent)
+        */  
+        var from = "d4"/*dragInfo.dragStartPos*/,
+            to = ev.target.id;
+        ev.target.style.backgroundColor = 'rgb(150,200,100)';
+        
+        console.log('dropped on ' + to);
+        
+        controller.move(from, to);
+    }
+    
+    
+    
+    function movePerformedHandler(from, to){
+        var fromSquare = document.getElementById(from),
+            fromSquareContent = fromSquare.firstChild, // Unique child
+            toSquare = document.getElementById(to);
+            
+        toSquare.appendChild(fromSquareContent);    
+    }
+    
+    
+    /* Public methods */
+    this.getBoardDocumentFragment = function(){
+        return board;
+    };
+   
+
+    
+    /** constructor function **/
+    // Init the board itself.
+    // add the pieces according to what is in the model
+    // register to model events
+    // add the controller functions at the end.
+    (function(){
+        var currentModelBoard;
+        var pos;
+        var piece;
+        var imgFileName;
+        var img;
+        
+        board = document.createDocumentFragment();
+        board.appendChild( createBoard() );
+        
+        modelConstants = model.getConstants();
+        
+        currentModelBoard = model.getBoardByPosition();
+        
+        for(pos in currentModelBoard){ // enumerable properties
+            piece = currentModelBoard[pos];
+            imgFileName = fileName(piece);
+        
+            img = document.createElement('img');
+            img.src = imgFileName;
+            img.draggable = "true";
+            
+            img.addEventListener('dragstart', pieceImgDragStart, false);
+        
+            board.querySelector('#' + pos).appendChild(img);
+        }
+        
+        model.addEventListener("movePerformed", movePerformedHandler);
+        
+    }).call(this);
+}

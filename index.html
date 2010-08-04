@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+
+    <link rel="stylesheet" type="text/css" href="style/main" />
+    <link rel="stylesheet" type="text/css" href="style/chess" />
+
+    <script src="script/GameEvent" type="text/javascript"> </script>
+    <script src="script/ChessModelPiece" type="text/javascript"> </script>
+    <script src="script/ChessGameModel" type="text/javascript"> </script>   
+    
+    
+    <script src="script/ChessGameController" type="text/javascript"> </script>
+    <script src="script/Chess2DHtmlGraphicalView" type="text/javascript"> </script>   
+    <script src="script/ChessTextView" type="text/javascript"> </script>
+    <script src="script/ChessGame" type="text/javascript"> </script>
+    
+	<script src="script/start.js" type="text/javascript"> </script>
+
+    <script type="text/javascript"> 
+    
+    function eventString(ev){
+        var target = ev.target;
+        var s = "";
+        s += ev.type;
+        s += " occured on "
+        s += target.tagName;
+        s += " element";
+        
+        s += " // currentTarget : ";
+        s += ev.currentTarget.tagName;
+        
+        if(target.className){
+            s += " // class(es) : ";
+            s += target.className;
+        }
+        
+        if(target.id){
+            s += " // id : ";
+            s += target.id;
+        }
+       
+        console.log(s);
+        
+        ev.stopPropagation();
+    }
+    
+    
+    function domloaded(){
+        var model = new ChessGameModel();
+        var controller = new ChessGameController(model);
+        var view = new Chess2DHtmlGraphicalView(model, controller);
+        
+        var wrap = document.createElement('div');
+        wrap.id = 'wrap';
+        
+        wrap.appendChild( view.getBoardDocumentFragment() );
+        
+        document.body.appendChild( wrap );
+        
+                // drops
+        
+        var allElements = document.getElementsByTagName('*');
+        
+        var i;
+        
+        for(i=0 ; i< allElements.length ; i++){
+            
+            if(allElements[i].addEventListener){
+                allElements[i].addEventListener('dragenter', eventString, true);
+                allElements[i].addEventListener('drop', eventString, false);
+                allElements[i].addEventListener('mouseup', eventString, false);
+                /*allElements[i].addEventListener('mousemove', function(e){e.preventDefault();}, false);
+                allElements[i].addEventListener('mousedown', function(e){e.preventDefault();}, false);*/
+            }
+        }
+        
+        
+        
+        
+        /*var dropEv = document.createEvent('DragEvent');
+        dropEv.initDragEvent("drop", true, true, null, 0, 0, 0, 0, 0, 
+                             false, false, false, false, 0, document.body, {});
+        
+        var squares = document.getElementsByClassName("chess-board-square");
+        
+        for(var i = 0 ; i< squares.length ; i++){
+            squares[i].dispatchEvent(dropEv);
+            console.log("dispatch " +  i);
+        
+        }*/
+        
+    }
+    
+    
+    
+    
+    document.addEventListener("DOMContentLoaded", domloaded, false);
+    
+    </script>
+
+
+    <title>Chess for friends</title>    
+  </head>
+
+  
+  <body>
+        
+  </body>
+
+</html>
+
