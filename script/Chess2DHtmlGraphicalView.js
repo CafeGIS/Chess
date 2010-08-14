@@ -7,7 +7,7 @@ function Chess2DHtmlGraphicalView(model, controller){
     var modelConstants;
     var dragInfo;
 
-    /* Private methods */    
+    /* Private methods */
     
     function createBoard(){
         var i, j,
@@ -26,15 +26,15 @@ function Chess2DHtmlGraphicalView(model, controller){
             for(j = 1 ; j <= 8 ; j++){
                 square = document.createElement('div');
                 square.className = "chess-board-square"; // use classList eventually
-                /*square.className += " " + (((i+j)%2 == 0) ? "white" : "black"); // use classList eventually*/
                 square.id = LETTERS[j-1] + (9-i);
-                
+
                 square.addEventListener('dragenter', squareDragEnter, false);
-                square.addEventListener('drop', function(){console.log('drop on a square');}/*squareDrop*/, false);
-                //square.addEventListener('dragover', function(){return false;}, false);
-                square.ondragover = "return false";
-        
-        
+                
+                // To tell the browser that some place is droppable, e.preventDefault has to be done to this place on dragover (http://html5doctor.com/native-drag-and-drop/)
+                square.addEventListener('dragover', function(e){e.preventDefault();}, false); 
+                
+                square.addEventListener('drop', squareDrop, false);
+                
                 rank.appendChild(square);
             }
         
@@ -93,7 +93,6 @@ function Chess2DHtmlGraphicalView(model, controller){
     */
     
     function pieceImgDragStart(ev){
-        //var img;
         var target = ev.target;
        
         //target.parentNode.style.backgroundColor = 'rgb(200,100,150)';
@@ -108,38 +107,42 @@ function Chess2DHtmlGraphicalView(model, controller){
         //target.parentNode.removeChild(target);
         
         ev.dataTransfer.setDragImage(target, 0, 0); // a bit random
-        ev.dataTransfer.setData("Text", "azertyuiop");
         
         dragInfo = {};
         dragInfo.dragStartPos = target.parentNode.id;
+        dragInfo.img = target;
+        
+        //target.parentNode.removeChild(target);
     }
     
     function squareDragEnter(ev){
 
         ev.target.style.backgroundColor = '#4B0082';
         ev.dataTransfer.dropEffect = "move";
-        console.log('dragenter');
     }
     
         
     function squareDrop(ev){
-        /*
-        ** lancer des drop fais à la main (document.createEvent)
-        */  
-        var from = "d4"/*dragInfo.dragStartPos*/,
-            to = ev.target.id;
-        ev.target.style.backgroundColor = 'rgb(150,200,100)';
-        
-        console.log('dropped on ' + to);
+        var target = ev.target;
+            from = dragInfo.dragStartPos,
+            to = target.id;
+            
+        target.style.backgroundColor = 'rgb(150,200,100)';
         
         controller.move(from, to);
+
+        //ev.preventDefault(); 
+        ev.stopPropagation(); // otherwise it bubbles up and destroy the document.
+        console.log('squareDrop');
+        
+        return false;
     }
     
     
     
     function movePerformedHandler(from, to){
         var fromSquare = document.getElementById(from),
-            fromSquareContent = fromSquare.firstChild, // Unique child
+            fromSquareContent = dragInfo.img, // Unique child
             toSquare = document.getElementById(to);
             
         toSquare.appendChild(fromSquareContent);    

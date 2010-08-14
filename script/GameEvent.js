@@ -8,7 +8,7 @@ function GameEvent(){
     this.notify = function(){
         var args = arguments;
         
-        listeners.foreach(function(e){
+        listeners.forEach(function(e){
             e.apply({}, args );
         });
     };

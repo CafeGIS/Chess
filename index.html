@@ -4,18 +4,18 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 
-    <link rel="stylesheet" type="text/css" href="style/main" />
-    <link rel="stylesheet" type="text/css" href="style/chess" />
+    <link rel="stylesheet" type="text/css" href="style/main.css" />
+    <link rel="stylesheet" type="text/css" href="style/chess.css" />
 
-    <script src="script/GameEvent" type="text/javascript"> </script>
-    <script src="script/ChessModelPiece" type="text/javascript"> </script>
-    <script src="script/ChessGameModel" type="text/javascript"> </script>   
+    <script src="script/GameEvent.js" type="text/javascript"> </script>
+    <script src="script/ChessModelPiece.js" type="text/javascript"> </script>
+    <script src="script/ChessGameModel.js" type="text/javascript"> </script>   
     
     
-    <script src="script/ChessGameController" type="text/javascript"> </script>
-    <script src="script/Chess2DHtmlGraphicalView" type="text/javascript"> </script>   
-    <script src="script/ChessTextView" type="text/javascript"> </script>
-    <script src="script/ChessGame" type="text/javascript"> </script>
+    <script src="script/ChessGameController.js" type="text/javascript"> </script>
+    <script src="script/Chess2DHtmlGraphicalView.js" type="text/javascript"> </script>   
+    <script src="script/ChessTextView.js" type="text/javascript"> </script>
+    <script src="script/ChessGame.js" type="text/javascript"> </script>
     
 	<script src="script/start.js" type="text/javascript"> </script>
 
@@ -43,8 +43,6 @@
         }
        
         console.log(s);
-        
-        ev.stopPropagation();
     }
     
     
@@ -69,16 +67,13 @@
         for(i=0 ; i< allElements.length ; i++){
             
             if(allElements[i].addEventListener){
-                allElements[i].addEventListener('dragenter', eventString, true);
+                //allElements[i].addEventListener('dragenter', eventString, true);
                 allElements[i].addEventListener('drop', eventString, false);
-                allElements[i].addEventListener('mouseup', eventString, false);
-                /*allElements[i].addEventListener('mousemove', function(e){e.preventDefault();}, false);
-                allElements[i].addEventListener('mousedown', function(e){e.preventDefault();}, false);*/
+                //allElements[i].addEventListener('mouseup', eventString, false);
+                //allElements[i].addEventListener('mousemove', function(e){e.preventDefault();}, false);
+                //allElements[i].addEventListener('mousedown', function(e){e.preventDefault();}, false);
             }
         }
-        
-        
-        
         
         /*var dropEv = document.createEvent('DragEvent');
         dropEv.initDragEvent("drop", true, true, null, 0, 0, 0, 0, 0, 

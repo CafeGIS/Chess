@@ -83,7 +83,7 @@ function ChessGameModel(){
     };
 
     this.move = function(from, to){
-        if(pieceAt(from) !== null){
+        if(this.pieceAt(from) !== null){
             if(canMove(from, to)){
                 // actual move
                 board[to] = board[from];
